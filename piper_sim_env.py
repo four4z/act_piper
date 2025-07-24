@@ -151,9 +151,9 @@ class TransferCubeTask(BimanualViperXTask):
             contact_pair = (name_geom_1, name_geom_2)
             all_contact_pairs.append(contact_pair)
 
-        touch_left_gripper = ("red_box", "left_gripper_1") in all_contact_pairs
-        touch_right_gripper = ("red_box", "right_gripper_1") in all_contact_pairs
-        touch_table = ("red_box", "table") in all_contact_pairs
+        touch_left_gripper = ("green_box", "left_gripper_1") in all_contact_pairs
+        touch_right_gripper = ("green_box", "right_gripper_1") in all_contact_pairs
+        touch_table = ("green_box", "table") in all_contact_pairs
 
         reward = 0
         if touch_right_gripper:

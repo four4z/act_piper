@@ -160,7 +160,7 @@ class TransferCubeEETask(BimanualViperXEETask):
         self.initialize_robots(physics)
         # randomize box position
         cube_pose = sample_box_pose()
-        box_start_idx = physics.model.name2id('red_box_joint', 'joint')
+        box_start_idx = physics.model.name2id('green_box_joint', 'joint')
         np.copyto(physics.data.qpos[box_start_idx : box_start_idx + 7], cube_pose)
         # print(f"randomized cube position to {cube_position}")
 
@@ -182,9 +182,9 @@ class TransferCubeEETask(BimanualViperXEETask):
             contact_pair = (name_geom_1, name_geom_2)
             all_contact_pairs.append(contact_pair)
 
-        touch_left_gripper = ("red_box", "vx300s_left/10_left_gripper_finger") in all_contact_pairs
-        touch_right_gripper = ("red_box", "vx300s_right/10_right_gripper_finger") in all_contact_pairs
-        touch_table = ("red_box", "table") in all_contact_pairs
+        touch_left_gripper = ("green_box", "vx300s_left/10_left_gripper_finger") in all_contact_pairs
+        touch_right_gripper = ("green_box", "vx300s_right/10_right_gripper_finger") in all_contact_pairs
+        touch_table = ("green_box", "table") in all_contact_pairs
 
         reward = 0
         if touch_right_gripper:

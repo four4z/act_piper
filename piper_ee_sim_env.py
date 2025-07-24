@@ -83,10 +83,10 @@ class BimanualPiperEETask(base.Task):
         # (2) get env._physics.named.data.xpos['vx300s_left/gripper_link']
         #     get env._physics.named.data.xquat['vx300s_left/gripper_link']
         #     repeat the same for right side
-        np.copyto(physics.data.mocap_pos[0], [-0.31718881, 0.1, 0.29525084])
+        np.copyto(physics.data.mocap_pos[0], [-0.315, 0.1, 0.215])
         np.copyto(physics.data.mocap_quat[0], [1, 0, 0, 0])
         # right
-        np.copyto(physics.data.mocap_pos[1], np.array([0.31718881, 0.1, 0.29525084]))
+        np.copyto(physics.data.mocap_pos[1], np.array([0.315, 0.1, 0.215]))
         np.copyto(physics.data.mocap_quat[1],  [1, 0, 0, 0])
 
         # reset gripper control
@@ -158,7 +158,7 @@ class TransferCubeEETask(BimanualPiperEETask):
         self.initialize_robots(physics)
         # randomize box position
         cube_pose = sample_box_pose()
-        box_start_idx = physics.model.name2id('red_box_joint', 'joint')
+        box_start_idx = physics.model.name2id('green_box_joint', 'joint')
         np.copyto(physics.data.qpos[box_start_idx : box_start_idx + 7], cube_pose)
         # print(f"randomized cube position to {cube_position}")
 
@@ -180,9 +180,9 @@ class TransferCubeEETask(BimanualPiperEETask):
             contact_pair = (name_geom_1, name_geom_2)
             all_contact_pairs.append(contact_pair)
 
-        touch_left_gripper = ("red_box", "l_gripper_finger") in all_contact_pairs
-        touch_right_gripper = ("red_box", "r_gripper_finger") in all_contact_pairs
-        touch_table = ("red_box", "table") in all_contact_pairs
+        touch_left_gripper = ("green_box", "l_gripper_finger") in all_contact_pairs
+        touch_right_gripper = ("green_box", "r_gripper_finger") in all_contact_pairs
+        touch_table = ("green_box", "table") in all_contact_pairs
 
         reward = 0
         if touch_right_gripper:
