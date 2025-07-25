@@ -87,21 +87,21 @@ class PickAndTransferPolicy(BasePolicy):
         gripper_pick_quat_right = gripper_pick_quat_right * Quaternion(axis=[0.0, 1.0, 0.0], degrees=-30)  # Even less angle for more vertical approach
 
         gripper_pick_quat_left = Quaternion(init_mocap_pose_left[3:])
-        gripper_pick_quat_left = gripper_pick_quat_left * Quaternion(axis=[0.0, 1.0, 0.0], degrees=30)   # Even less angle for more vertical approach
+        gripper_pick_quat_left = gripper_pick_quat_left * Quaternion(axis=[0.0, 2.0, 0.0], degrees=30)   # Even less angle for more vertical approach
 
-        # Generate random intermediate and final positions
-        # Intermediate position (where right arm places the box)
+        # Generate random intermediate and final positions on the table
+        # Intermediate position (where right arm places the box) - constrained to table area
         intermediate_xyz = np.array([
-            np.random.uniform(-0.2, 0.2),  # x: random between -0.2 and 0.2
-            np.random.uniform(0.2, 0.4),   # y: random between 0.2 and 0.4
-            0.07                           # z: table height (matching box initial position)
+            np.random.uniform(-0.25, 0.25),  # x: across table width
+            np.random.uniform(0.1, 0.35),    # y: front portion of table
+            0.07                             # z: table height (matching box initial position)
         ])
         
-        # Final position (where left arm places the box)
+        # Final position (where left arm places the box) - combined target position
         final_xyz = np.array([
-            np.random.uniform(-0.3, 0.1),  # x: random between -0.3 and 0.1
-            np.random.uniform(-0.2, 0.2),  # y: random between -0.2 and 0.2
-            0.07                           # z: table height (matching box initial position)
+            np.random.uniform(-0.25, 0.25),  # x: across table width
+            np.random.uniform(-0.1, 0.25),   # y: back to center portion of table
+            0.07                             # z: table height (matching box initial position)
         ])
         
         print(f"Episode positions: box_center={box_center_xyz}, intermediate={intermediate_xyz}, final={final_xyz}")
@@ -115,20 +115,25 @@ class PickAndTransferPolicy(BasePolicy):
         self.left_trajectory = [
             {"t": 0, "xyz": init_mocap_pose_left[:3], "quat": init_mocap_pose_left[3:], "gripper": 1}, # sleep with open gripper
             {"t": 290, "xyz": init_mocap_pose_left[:3], "quat": init_mocap_pose_left[3:], "gripper": 1}, # wait for right arm to complete
-            {"t": 310, "xyz": intermediate_xyz + np.array([-0.12, 0, 0.10]), "quat": gripper_pick_quat_left.elements, "gripper": 1}, # approach from further side
-            {"t": 330, "xyz": intermediate_xyz + np.array([-0.06, 0, 0.06]), "quat": gripper_pick_quat_left.elements, "gripper": 1}, # get closer
-            {"t": 350, "xyz": intermediate_xyz + np.array([-0.02, 0, 0.02]), "quat": gripper_pick_quat_left.elements, "gripper": 1}, # position near center
-            {"t": 365, "xyz": intermediate_xyz + np.array([0, 0, 0]), "quat": gripper_pick_quat_left.elements, "gripper": 1}, # center position
-            {"t": 370, "xyz": intermediate_xyz + np.array([0, 0, -0.005]), "quat": gripper_pick_quat_left.elements, "gripper": 0.9}, # slightly below center, start closing
-            {"t": 375, "xyz": intermediate_xyz + np.array([0, 0, -0.005]), "quat": gripper_pick_quat_left.elements, "gripper": 0.7}, # continue closing
-            {"t": 380, "xyz": intermediate_xyz + np.array([0, 0, -0.005]), "quat": gripper_pick_quat_left.elements, "gripper": 0.5}, # more closed
-            {"t": 385, "xyz": intermediate_xyz + np.array([0, 0, -0.005]), "quat": gripper_pick_quat_left.elements, "gripper": 0.3}, # almost closed
-            {"t": 390, "xyz": intermediate_xyz + np.array([0, 0, -0.005]), "quat": gripper_pick_quat_left.elements, "gripper": 0.1}, # very closed
-            {"t": 395, "xyz": intermediate_xyz + np.array([0, 0, -0.005]), "quat": gripper_pick_quat_left.elements, "gripper": 0}, # fully close
-            {"t": 400, "xyz": intermediate_xyz + np.array([0, 0, 0.08]), "quat": gripper_pick_quat_left.elements, "gripper": 0}, # lift box higher
-            {"t": 410, "xyz": final_xyz + np.array([0, 0, 0.08]), "quat": gripper_pick_quat_left.elements, "gripper": 0}, # transport to final
-            {"t": 420, "xyz": final_xyz + np.array([0, 0, 0.01]), "quat": gripper_pick_quat_left.elements, "gripper": 0}, # place at final
-            {"t": 430, "xyz": final_xyz + np.array([0, 0, 0.01]), "quat": gripper_pick_quat_left.elements, "gripper": 1}, # open gripper
+            {"t": 310, "xyz": intermediate_xyz + np.array([-0.12, 0, 0.05]), "quat": gripper_pick_quat_left.elements, "gripper": 1}, # approach from further side - much lower
+            {"t": 330, "xyz": intermediate_xyz + np.array([-0.06, 0, 0.03]), "quat": gripper_pick_quat_left.elements, "gripper": 1}, # get closer - lower
+            {"t": 350, "xyz": intermediate_xyz + np.array([-0.02, 0, 0.01]), "quat": gripper_pick_quat_left.elements, "gripper": 1}, # position near center - much lower
+            {"t": 365, "xyz": intermediate_xyz + np.array([0, 0, -0.05]), "quat": gripper_pick_quat_left.elements, "gripper": 1}, # center position
+            {"t": 370, "xyz": intermediate_xyz + np.array([0, 0, -0.05]), "quat": gripper_pick_quat_left.elements, "gripper": 0.9}, # slightly below center, start closing
+            {"t": 375, "xyz": intermediate_xyz + np.array([0, 0, -0.05]), "quat": gripper_pick_quat_left.elements, "gripper": 0.7}, # continue closing
+            {"t": 380, "xyz": intermediate_xyz + np.array([0, 0, -0.05]), "quat": gripper_pick_quat_left.elements, "gripper": 0.5}, # more closed
+            {"t": 385, "xyz": intermediate_xyz + np.array([0, 0, -0.05]), "quat": gripper_pick_quat_left.elements, "gripper": 0.3}, # almost closed
+            {"t": 390, "xyz": intermediate_xyz + np.array([0, 0, -0.05]), "quat": gripper_pick_quat_left.elements, "gripper": 0.1}, # very closed
+            {"t": 395, "xyz": intermediate_xyz + np.array([0, 0, -0.05]), "quat": gripper_pick_quat_left.elements, "gripper": 0}, # fully close
+            {"t": 400, "xyz": intermediate_xyz + np.array([0, 0, 0.05]), "quat": gripper_pick_quat_left.elements, "gripper": 0}, # lift box - lower height
+            {"t": 410, "xyz": final_xyz + np.array([0, 0, 0.05]), "quat": gripper_pick_quat_left.elements, "gripper": 0}, # transport to final - lower height
+            {"t": 420, "xyz": final_xyz + np.array([0, 0, 0.01]), "quat": gripper_pick_quat_left.elements, "gripper": 0}, # lower to table level
+            {"t": 430, "xyz": final_xyz + np.array([0, 0, -0.05]), "quat": gripper_pick_quat_left.elements, "gripper": 0}, # place fully on table
+            {"t": 440, "xyz": final_xyz + np.array([0, 0, -0.05]), "quat": gripper_pick_quat_left.elements, "gripper": 0.5}, # start opening gripper
+            {"t": 450, "xyz": final_xyz + np.array([0, 0, -0.05]), "quat": gripper_pick_quat_left.elements, "gripper": 1}, # fully open gripper
+            {"t": 460, "xyz": final_xyz + np.array([0, 0, 0.02]), "quat": gripper_pick_quat_left.elements, "gripper": 1}, # lift up slightly
+            {"t": 470, "xyz": final_xyz + np.array([-0.12, 0, 0.06]), "quat": gripper_pick_quat_left.elements, "gripper": 1}, # move away
+            {"t": 480, "xyz": final_xyz + np.array([-0.12, 0, 0.06]), "quat": gripper_pick_quat_left.elements, "gripper": 1}, # stay away
         ]
 
         # Right arm trajectory: picks up box and places at intermediate position, then moves away
@@ -137,19 +142,22 @@ class PickAndTransferPolicy(BasePolicy):
             {"t": 40, "xyz": box_center_xyz + np.array([0.08, 0, 0.08]), "quat": gripper_pick_quat_right.elements, "gripper": 1}, # approach from side
             {"t": 70, "xyz": box_center_xyz + np.array([0.04, 0, 0.04]), "quat": gripper_pick_quat_right.elements, "gripper": 1}, # get closer to box
             {"t": 90, "xyz": box_center_xyz + np.array([0.01, 0, 0.01]), "quat": gripper_pick_quat_right.elements, "gripper": 1}, # position near box center
-            {"t": 110, "xyz": box_center_xyz + np.array([0, 0, -0.005]), "quat": gripper_pick_quat_right.elements, "gripper": 1}, # slightly below center
-            {"t": 130, "xyz": box_center_xyz + np.array([0, 0, -0.005]), "quat": gripper_pick_quat_right.elements, "gripper": 0.8}, # start closing
-            {"t": 140, "xyz": box_center_xyz + np.array([0, 0, -0.005]), "quat": gripper_pick_quat_right.elements, "gripper": 0.6}, # continue closing
-            {"t": 150, "xyz": box_center_xyz + np.array([0, 0, -0.005]), "quat": gripper_pick_quat_right.elements, "gripper": 0.4}, # more closed
-            {"t": 160, "xyz": box_center_xyz + np.array([0, 0, -0.005]), "quat": gripper_pick_quat_right.elements, "gripper": 0.2}, # almost closed
+            {"t": 110, "xyz": box_center_xyz + np.array([0, 0, -0.006]), "quat": gripper_pick_quat_right.elements, "gripper": 1}, # slightly below center
+            {"t": 130, "xyz": box_center_xyz + np.array([0, 0, -0.006]), "quat": gripper_pick_quat_right.elements, "gripper": 0.8}, # start closing
+            {"t": 140, "xyz": box_center_xyz + np.array([0, 0, -0.006]), "quat": gripper_pick_quat_right.elements, "gripper": 0.6}, # continue closing
+            {"t": 150, "xyz": box_center_xyz + np.array([0, 0, -0.006]), "quat": gripper_pick_quat_right.elements, "gripper": 0.4}, # more closed
+            {"t": 160, "xyz": box_center_xyz + np.array([0, 0, -0.006]), "quat": gripper_pick_quat_right.elements, "gripper": 0.2}, # almost closed
             {"t": 170, "xyz": box_center_xyz + np.array([0, 0, -0.005]), "quat": gripper_pick_quat_right.elements, "gripper": 0}, # fully closed
             {"t": 180, "xyz": box_center_xyz + np.array([0, 0, -0.005]), "quat": gripper_pick_quat_right.elements, "gripper": 0}, # hold grip
             {"t": 190, "xyz": box_center_xyz + np.array([0, 0, 0.06]), "quat": gripper_pick_quat_right.elements, "gripper": 0}, # lift box
             {"t": 220, "xyz": intermediate_xyz + np.array([0, 0, 0.06]), "quat": gripper_pick_quat_right.elements, "gripper": 0}, # transport to intermediate
-            {"t": 240, "xyz": intermediate_xyz + np.array([0, 0, -0.005]), "quat": gripper_pick_quat_right.elements, "gripper": 0}, # place at intermediate
-            {"t": 260, "xyz": intermediate_xyz + np.array([0, 0, -0.005]), "quat": gripper_pick_quat_right.elements, "gripper": 1}, # open gripper
-            {"t": 280, "xyz": intermediate_xyz + np.array([0.12, 0, 0.06]), "quat": gripper_pick_quat_right.elements, "gripper": 1}, # move away
-            {"t": 430, "xyz": intermediate_xyz + np.array([0.12, 0, 0.06]), "quat": gripper_pick_quat_right.elements, "gripper": 1}, # stay away
+            {"t": 240, "xyz": intermediate_xyz + np.array([0, 0, 0.01]), "quat": gripper_pick_quat_right.elements, "gripper": 0}, # lower to table level
+            {"t": 250, "xyz": intermediate_xyz + np.array([0, 0, -0.005]), "quat": gripper_pick_quat_right.elements, "gripper": 0}, # place fully on table
+            {"t": 260, "xyz": intermediate_xyz + np.array([0, 0, -0.005]), "quat": gripper_pick_quat_right.elements, "gripper": 0.5}, # start opening gripper
+            {"t": 270, "xyz": intermediate_xyz + np.array([0, 0, -0.005]), "quat": gripper_pick_quat_right.elements, "gripper": 1}, # fully open gripper
+            {"t": 280, "xyz": intermediate_xyz + np.array([0, 0, 0.02]), "quat": gripper_pick_quat_right.elements, "gripper": 1}, # lift up slightly
+            {"t": 290, "xyz": intermediate_xyz + np.array([0.12, 0, 0.06]), "quat": gripper_pick_quat_right.elements, "gripper": 1}, # move away
+            {"t": 480, "xyz": intermediate_xyz + np.array([0.12, 0, 0.06]), "quat": gripper_pick_quat_right.elements, "gripper": 1}, # stay away
         ]
 
 
@@ -229,13 +237,16 @@ def test_policy(task_name):
             if onscreen_render:
                 plt_img.set_data(ts.observation['images']['angle'])
                 plt.pause(0.02)
-        plt.close()
 
         episode_return = np.sum([ts.reward for ts in episode[1:]])
         if episode_return > 0:
             print(f"{episode_idx=} Successful, {episode_return=}")
         else:
             print(f"{episode_idx=} Failed")
+        
+        # Add delay between episodes to see results
+        # import time
+        # time.sleep(3)  # 3 second delay between episodes
 
 
 if __name__ == '__main__':
