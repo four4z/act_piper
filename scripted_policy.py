@@ -118,13 +118,13 @@ class PickAndTransferPolicy(BasePolicy):
             {"t": 310, "xyz": intermediate_xyz + np.array([-0.12, 0, 0.05]), "quat": gripper_pick_quat_left.elements, "gripper": 1}, # approach from further side - much lower
             {"t": 330, "xyz": intermediate_xyz + np.array([-0.06, 0, 0.03]), "quat": gripper_pick_quat_left.elements, "gripper": 1}, # get closer - lower
             {"t": 350, "xyz": intermediate_xyz + np.array([-0.02, 0, 0.01]), "quat": gripper_pick_quat_left.elements, "gripper": 1}, # position near center - much lower
-            {"t": 365, "xyz": intermediate_xyz + np.array([0, 0, -0.05]), "quat": gripper_pick_quat_left.elements, "gripper": 1}, # center position
-            {"t": 370, "xyz": intermediate_xyz + np.array([0, 0, -0.05]), "quat": gripper_pick_quat_left.elements, "gripper": 0.9}, # slightly below center, start closing
-            {"t": 375, "xyz": intermediate_xyz + np.array([0, 0, -0.05]), "quat": gripper_pick_quat_left.elements, "gripper": 0.7}, # continue closing
-            {"t": 380, "xyz": intermediate_xyz + np.array([0, 0, -0.05]), "quat": gripper_pick_quat_left.elements, "gripper": 0.5}, # more closed
-            {"t": 385, "xyz": intermediate_xyz + np.array([0, 0, -0.05]), "quat": gripper_pick_quat_left.elements, "gripper": 0.3}, # almost closed
-            {"t": 390, "xyz": intermediate_xyz + np.array([0, 0, -0.05]), "quat": gripper_pick_quat_left.elements, "gripper": 0.1}, # very closed
-            {"t": 395, "xyz": intermediate_xyz + np.array([0, 0, -0.05]), "quat": gripper_pick_quat_left.elements, "gripper": 0}, # fully close
+            {"t": 365, "xyz": intermediate_xyz + np.array([0, 0, -0.045]), "quat": gripper_pick_quat_left.elements, "gripper": 1}, # center position
+            {"t": 370, "xyz": intermediate_xyz + np.array([0, 0, -0.045]), "quat": gripper_pick_quat_left.elements, "gripper": 0.9}, # slightly below center, start closing
+            {"t": 375, "xyz": intermediate_xyz + np.array([0, 0, -0.045]), "quat": gripper_pick_quat_left.elements, "gripper": 0.7}, # continue closing
+            {"t": 380, "xyz": intermediate_xyz + np.array([0, 0, -0.045]), "quat": gripper_pick_quat_left.elements, "gripper": 0.5}, # more closed
+            {"t": 385, "xyz": intermediate_xyz + np.array([0, 0, -0.045]), "quat": gripper_pick_quat_left.elements, "gripper": 0.3}, # almost closed
+            {"t": 390, "xyz": intermediate_xyz + np.array([0, 0, -0.045]), "quat": gripper_pick_quat_left.elements, "gripper": 0.1}, # very closed
+            {"t": 395, "xyz": intermediate_xyz + np.array([0, 0, -0.045]), "quat": gripper_pick_quat_left.elements, "gripper": 0}, # fully close
             {"t": 400, "xyz": intermediate_xyz + np.array([0, 0, 0.05]), "quat": gripper_pick_quat_left.elements, "gripper": 0}, # lift box - lower height
             {"t": 410, "xyz": final_xyz + np.array([0, 0, 0.05]), "quat": gripper_pick_quat_left.elements, "gripper": 0}, # transport to final - lower height
             {"t": 420, "xyz": final_xyz + np.array([0, 0, 0.01]), "quat": gripper_pick_quat_left.elements, "gripper": 0}, # lower to table level
