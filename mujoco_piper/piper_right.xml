@@ -153,7 +153,7 @@
   </equality>
 
   <actuator>
-    <position name="r_gripper" joint="r_joint7" class="finger" kp="500" kv="80"/>
+    <position name="r_gripper" joint="r_joint7" class="finger" kp="500" kv="100"/>
   </actuator>
 
 </mujoco>
